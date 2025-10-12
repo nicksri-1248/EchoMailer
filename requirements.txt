@@ -1,0 +1,33 @@
+# Core Framework
+Django==5.2.7
+asgiref==3.10.0
+
+# Forms
+django-crispy-forms==2.4
+
+# Configuration Management
+python-decouple==3.8
+
+# Database
+sqlparse==0.5.3
+
+# Optional: Email Backend (uncomment if using)
+# django-anymail==10.2  # For SendGrid, Mailgun, etc.
+# sendgrid==6.11.0
+# mailchimp-marketing==3.0.80
+
+# Optional: Production Server (uncomment for deployment)
+# gunicorn==21.2.0
+# whitenoise==6.6.0  # For serving static files
+
+# Optional: Database Drivers (uncomment if needed)
+# psycopg2-binary==2.9.9  # PostgreSQL
+# mysqlclient==2.2.0  # MySQL
+
+# Optional: Celery for async tasks (uncomment if needed)
+# celery==5.3.4
+# redis==5.0.1
+
+# Optional: Additional utilities
+# pillow==10.1.0  # For image processing
+# python-dotenv==1.0.0  # Alternative to python-decouple
