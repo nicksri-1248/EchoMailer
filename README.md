@@ -9,6 +9,10 @@ A Django-based email automation system for managing recipients, creating email t
 - 🚀 **Bulk Email Sending**: Send personalized emails to multiple recipients
 - 📊 **Email Logs**: Track sent, failed, and pending emails
 - 📤 **CSV Import**: Bulk import recipients from CSV files
+- 🔐 **Email Credential Management**: Configure SMTP settings through web interface
+- 🔒 **Encrypted Storage**: Passwords stored securely with Fernet encryption
+- 📎 **Email Attachments**: Attach multiple files to your emails (NEW!)
+- ⏱️ **Configurable Delays**: Control sending speed to avoid rate limiting (NEW!)
 - 🎨 **Modern UI**: Clean and responsive interface with Bootstrap
 
 ## Requirements
@@ -39,13 +43,13 @@ pip install -r requirements.txt
 ```
 
 ### 4. Configure environment variables
-Create a `.env` file in the project root:
+Create a `.env` file in the `email_sender` directory:
 ```env
 SECRET_KEY=your-secret-key-here
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-# Email Configuration
+# Email Configuration (Fallback - optional if using credential management)
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 # For production, use SMTP:
 # EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
@@ -55,7 +59,12 @@ EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 # EMAIL_HOST_USER=your-email@gmail.com
 # EMAIL_HOST_PASSWORD=your-app-password
 # DEFAULT_FROM_EMAIL=your-email@gmail.com
+
+# Email Credential Encryption Key (generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+EMAIL_ENCRYPTION_KEY=8xvt-R0qZ_KqJfHx7y9dL8N5wGzBkE3mC1_pUoYjLzI=
 ```
+
+**Note**: You can now configure email credentials through the web interface instead of using `.env` file. See the [Email Credential Management](#email-credential-management-new) section below.
 
 ### 5. Run migrations
 ```bash
@@ -125,6 +134,58 @@ The Team
 - Filter by status
 - View detailed information including error messages
 
+## Email Credential Management (NEW!)
+
+EchoMailer now supports managing SMTP email credentials through a user-friendly web interface instead of manually editing `.env` files.
+
+### Quick Start
+
+1. **Navigate to Email Credentials**
+   - Click **Email Credentials** in the sidebar
+   - Or visit: `http://127.0.0.1:8000/credentials/`
+
+2. **Add Your First Credential**
+   - Click **"Add New Credential"**
+   - Select your email provider (Gmail, Outlook, Yahoo, or Custom)
+   - Fill in your email and password
+   - Check **"Set as the active configuration"**
+   - Click **Save**
+
+3. **Test Your Credentials**
+   - Click the paper plane icon (Test button)
+   - A test email will be sent to verify everything works
+
+### Getting Gmail App Password
+
+1. Go to [Google Account Settings](https://myaccount.google.com/)
+2. Navigate to **Security** → **2-Step Verification**
+3. Scroll down to **App passwords**
+4. Generate a new app password for "Mail"
+5. Copy the 16-character password
+6. Use it in the credential form
+
+### Features
+
+- 🔐 **Secure Storage**: Passwords encrypted with Fernet encryption
+- 🔄 **Multiple Credentials**: Store and switch between different email accounts
+- ✅ **Easy Testing**: Send test emails to verify configuration
+- 🎯 **Provider Presets**: Auto-filled settings for Gmail, Outlook, and Yahoo
+- 🔒 **Active/Inactive**: Only one credential active at a time
+- 🔙 **Backward Compatible**: Falls back to `.env` if no active credential
+
+### Supported Providers
+
+| Provider | SMTP Host | Port | Security |
+|----------|-----------|------|----------|
+| Gmail | smtp.gmail.com | 587 | TLS |
+| Outlook | smtp.office365.com | 587 | TLS |
+| Yahoo | smtp.mail.yahoo.com | 587 | TLS |
+| Custom | Your SMTP server | Custom | TLS/SSL |
+
+### For More Details
+
+See the comprehensive guide: [CREDENTIAL_MANAGEMENT_GUIDE.md](CREDENTIAL_MANAGEMENT_GUIDE.md)
+
 ## Project Structure
 
 ```
@@ -175,6 +236,20 @@ EchoMailer/
 - `sent_at` (DateTimeField)
 - `created_at` (DateTimeField)
 
+### EmailCredential (NEW!)
+- `name` (CharField) - Descriptive name
+- `provider` (CharField) - Gmail, Outlook, Yahoo, Custom
+- `email_host` (CharField) - SMTP server
+- `email_port` (IntegerField) - SMTP port
+- `email_use_tls` (BooleanField) - Use TLS
+- `email_use_ssl` (BooleanField) - Use SSL
+- `email_host_user` (EmailField) - Email address
+- `email_host_password` (TextField) - Encrypted password
+- `from_email` (EmailField) - Sender email
+- `is_active` (BooleanField) - Active status
+- `created_at` (DateTimeField)
+- `updated_at` (DateTimeField)
+
 ## Email Configuration
 
 ### Development (Console Backend)
@@ -194,6 +269,7 @@ Access the Django admin at `http://127.0.0.1:8000/admin/` to manage:
 - Recipients
 - Email Templates
 - Email Logs
+- Email Credentials (NEW!)
 
 ## Contributing
 
@@ -212,7 +288,24 @@ For issues or questions, please create an issue in the repository.
 
 ## Version History
 
-### v1.0.0 (Current)
+### v1.2.0 (Current)
+- ✅ **Email Attachments**: Attach multiple files (PDF, images, documents)
+- ✅ **Configurable Delays**: Control sending speed between emails
+- ✅ **Batch Sending**: Send in batches with configurable pauses
+- ✅ **Attachment Limits**: Set maximum file count and size
+- ✅ **Email Settings Page**: Web-based configuration for delays
+- ✅ **Attachment Tracking**: Logs show which emails had attachments
+- All features from v1.1.0 and v1.0.0
+
+### v1.1.0
+- ✅ **Email Credential Management**: Web-based SMTP configuration
+- ✅ **Password Encryption**: Fernet symmetric encryption for security
+- ✅ **Multi-Provider Support**: Gmail, Outlook, Yahoo, Custom SMTP
+- ✅ **Credential Testing**: Send test emails to verify settings
+- ✅ **Active/Inactive Toggle**: Easy credential switching
+- All features from v1.0.0
+
+### v1.0.0
 - Initial release
 - Recipient management (email + company only)
 - Email template system
@@ -223,10 +316,12 @@ For issues or questions, please create an issue in the repository.
 
 ## Future Enhancements
 
+- [ ] User authentication and authorization
 - [ ] Email scheduling
 - [ ] Email analytics (open rates, click rates)
 - [ ] More personalization variables
-- [ ] Email attachments support
+- [ ] Different attachments per recipient
 - [ ] Advanced filtering and segmentation
 - [ ] Export functionality
 - [ ] API endpoints for integrations
+- [ ] Multiple active credentials per campaign

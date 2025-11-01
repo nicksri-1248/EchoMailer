@@ -8,6 +8,9 @@ django-crispy-forms==2.4
 # Configuration Management
 python-decouple==3.8
 
+# Security & Encryption
+cryptography==42.0.5
+
 # Database
 sqlparse==0.5.3
 
